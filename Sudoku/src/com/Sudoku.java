@@ -32,6 +32,7 @@ class Sudoku extends Frame implements WindowListener{
 		setVisible(true);
 		
 		
+		/*
 		int current = 0;
 		for(int i = 0;i < 9;i++) {
 			for(int j = 0;j <9;j++) {
@@ -39,9 +40,51 @@ class Sudoku extends Frame implements WindowListener{
 				current++;
 			}
 		}
+		*/
+		
+		updateGraphics(testSudoku);
+		
+		
 
 
 	}
+	
+	int[][] testSudoku = {
+			{  3, -1, -1,  8, -1,  1, -1, -1 , 2},
+			{  2, -1,  1, -1,  3, -1,  6, -1,  4},
+			{ -1, -1, -1,  2, -1,  4, -1, -1, -1},
+			{  8, -1,  9, -1, -1, -1,  1, -1,  6},
+			{ -1,  6, -1, -1, -1, -1, -1,  5, -1},
+			{  7, -1,  2, -1, -1, -1,  4, -1,  9},
+			{ -1, -1, -1,  5, -1,  9, -1, -1, -1},
+			{  9, -1,  4, -1,  8, -1,  7, -1,  5},
+			{  6, -1, -1,  1, -1,  7, -1, -1,  3}
+			
+	};
+	
+	public void updateGraphics(int[][] sudoku) {
+		if(sudoku.length != 9) {
+			return;//This must be a 9x9 cube
+		}
+		else {
+			for(int i = 0;i < 9;i++) {
+				if (sudoku[i].length != 9) {
+					return;//Check all index of array to make sure the length is 9
+				}
+			}
+		}
+		
+		//For every index of the 9x9 sudoku 2d array
+		for(int i = 0; i < 9; i++) {
+			for(int j = 0; j < 9; j++) {
+				if(sudoku[i][j] != -1) { //As long as the element is not -1 (which represents an unfilled box)
+					insert(sudoku[i][j],i,j);//Insert it into the visualized array
+				}
+			}
+		}
+		return;
+	}
+	
 	
 	//Draw grid lines for the board
 	public void paint(Graphics g){
