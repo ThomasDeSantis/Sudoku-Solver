@@ -7,9 +7,10 @@ import java.awt.geom.Line2D;
 
 class Sudoku extends Frame implements WindowListener{
 
-	
-
 	public SudokuBox boxes[];
+	public int[][] sudokuArray;
+	
+	
 	Sudoku(){
 		addWindowListener(this);
 		
@@ -42,7 +43,8 @@ class Sudoku extends Frame implements WindowListener{
 		}
 		*/
 		
-		updateGraphics(testSudoku);
+		setArray(testSudoku);
+		updateGraphics();
 		
 		
 
@@ -62,23 +64,29 @@ class Sudoku extends Frame implements WindowListener{
 			
 	};
 	
-	public void updateGraphics(int[][] sudoku) {
-		if(sudoku.length != 9) {
+	private void setArray(int[][] sudokuToBeSolved) {
+		//First ensure the given array is valid
+		if(sudokuToBeSolved.length != 9) {
 			return;//This must be a 9x9 cube
 		}
 		else {
 			for(int i = 0;i < 9;i++) {
-				if (sudoku[i].length != 9) {
+				if (sudokuToBeSolved[i].length != 9) {
 					return;//Check all index of array to make sure the length is 9
 				}
 			}
 		}
 		
+		sudokuArray = sudokuToBeSolved.clone();
+	}
+	
+	public void updateGraphics() {
+		
 		//For every index of the 9x9 sudoku 2d array
 		for(int i = 0; i < 9; i++) {
 			for(int j = 0; j < 9; j++) {
-				if(sudoku[i][j] != -1) { //As long as the element is not -1 (which represents an unfilled box)
-					insert(sudoku[i][j],i,j);//Insert it into the visualized array
+				if(sudokuArray[i][j] != -1) { //As long as the element is not -1 (which represents an unfilled box)
+					insert(sudokuArray[i][j],i,j);//Insert it into the visualized array
 				}
 			}
 		}
