@@ -46,7 +46,26 @@ class Sudoku extends Frame implements WindowListener{
 		setArray(testSudoku);
 		updateGraphics();
 		//getNextValidBox(testSudoku,3,3);
-		Backtracking.Backtrack(this);
+		
+		Button blank = new Button("Reset");
+		blank.setBounds(50,450,70,30);
+		blank.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				blank();
+			}
+		});
+		add(blank);
+		
+		
+		Button backtrack = new Button("Backtrack");
+		backtrack.setBounds(150,450,70,30);
+		backtrack.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				backtrack();
+			}
+		});
+		add(backtrack);
+
 		
 
 
@@ -124,6 +143,30 @@ class Sudoku extends Frame implements WindowListener{
 	
 	public void initTable(String[][] table) {
 		
+	}
+	
+	private void blank() {
+		for(int i = 0;i < 9;i++) {
+			for(int j = 0;j < 9; j++) {
+				sudokuArray[i][j] = -1;
+			}
+		}
+		updateGraphics();
+	}
+	
+	private void backtrack() {
+		assignArray();
+		updateGraphics();
+		Backtracking.Backtrack(this);
+		updateGraphics();
+	}
+	
+	private void assignArray() {
+		for(int i = 0; i < 9;i++) {
+			for(int j = 0; j < 9;j++) {
+				sudokuArray[i][j] = retrieve(i,j);
+			}
+		}
 	}
 	
 	
@@ -350,6 +393,7 @@ class Sudoku extends Frame implements WindowListener{
 			}
 		}
 		//Return the smallest valid position
+		/*
 		System.out.print("(");
 		for(int i = 0; i < 9;i++) {
 			if(valid[i]) {
@@ -357,6 +401,7 @@ class Sudoku extends Frame implements WindowListener{
 			}
 		}
 		System.out.print(")\n");
+		*/
 
 		
 		for(int i = min-1; i < 9;i++) {

@@ -51,6 +51,11 @@ public class SudokuBox{
 	}
 	
 	public int get(int boxI) {
-		return Integer.valueOf(box[boxI].getText());
+		if(box[boxI].getText().isBlank()) {
+			return -1;
+		}
+		else {
+			return Integer.valueOf(box[boxI].getText());
+		}
 	}
 }
