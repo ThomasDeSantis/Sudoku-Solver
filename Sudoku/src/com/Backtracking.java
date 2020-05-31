@@ -18,7 +18,7 @@ public class Backtracking {
 		
 		Stack<int[]> priorActions = new Stack<int[]>();
 		int i = 0, j = 0;
-		while(i != lastIndex[0] || j <= lastIndex[1]) {
+		while(i != lastIndex[0] || j != 8) {//TODO: Proper last idnex
 			
 			if(knownSpaces[i][j] == false) {
 				s.updateGraphics();
@@ -35,7 +35,7 @@ public class Backtracking {
 						i = tempArray[0];
 						j = tempArray[1];
 						System.out.println("Popped:" + Integer.toString(tempArray[0]) + " " +Integer.toString(tempArray[1]) + " " + Integer.toString(tempArray[2]));
-					}/*
+					}
 					else if(newElement == 10) {
 						while (!priorActions.isEmpty())
 						{
@@ -43,11 +43,18 @@ public class Backtracking {
 							System.err.println(Integer.toString(tempArray[0]) + " " +Integer.toString(tempArray[1]) + " " + Integer.toString(tempArray[2]));
 						}
 						System.exit(-1);
-					}*/
+					}
 					else  {
 						s.sudokuArray[i][j] = newElement;
 						System.out.println("Pushed:" + Integer.toString(i) + " " +Integer.toString(j) + " " + Integer.toString(newElement));
 						priorActions.push(new int[] {i,j,newElement});
+						if(j == 8) {
+							j = 0;
+							i++;
+						}
+						else {
+							j++;
+						}
 					}
 				}
 				else {
@@ -56,16 +63,17 @@ public class Backtracking {
 					return;
 				}
 			}
-			s.updateGraphics();
-			
-			if(j == 8) {
-				j = 0;
-				i++;
-			}
 			else {
-				j++;
+				if(j == 8) {
+					j = 0;
+					i++;
+				}
+				else {
+					j++;
+				}
 			}
 		}
+		s.updateGraphics();
 		System.out.println(j);
 
 	}
@@ -107,8 +115,7 @@ public class Backtracking {
 				if(i == row1 && j == 0) {
 					j = column1;
 				}
-				
-				if(!knownSpaces[i][j]) {
+				else if(!knownSpaces[i][j]) {
 					sudokuArray[i][j] = -1;
 					System.out.println("Reset:" + Integer.toString(i) + " " +Integer.toString(j));
 				}

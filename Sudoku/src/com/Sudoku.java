@@ -350,10 +350,19 @@ class Sudoku extends Frame implements WindowListener{
 			}
 		}
 		//Return the smallest valid position
-		
+		System.out.print("(");
+		for(int i = 0; i < 9;i++) {
+			if(valid[i]) {
+				System.out.print(Integer.toString(i+1));
+			}
+		}
+		System.out.print(")\n");
 
 		
-		for(int i = min; i < 9;i++) {
+		for(int i = min-1; i < 9;i++) {
+			if(i <= -1) {
+				i = 0;
+			}
 			if(valid[i]) {
 			return i + 1;
 			}
