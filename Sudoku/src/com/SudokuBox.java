@@ -40,7 +40,14 @@ public class SudokuBox{
 	}
 	
 	public void set(int boxI, int val) {
-		box[boxI].setText(Integer.toString(val));
+		if(val == -1) {
+			box[boxI].setText("");
+		}
+		else {
+			box[boxI].setText(Integer.toString(val));
+		}
+		
+		
 	}
 	
 	public int get(int boxI) {

@@ -45,7 +45,8 @@ class Sudoku extends Frame implements WindowListener{
 		
 		setArray(testSudoku);
 		updateGraphics();
-		
+		//getNextValidBox(testSudoku,3,3);
+		Backtracking.Backtrack(this);
 		
 
 
@@ -85,9 +86,7 @@ class Sudoku extends Frame implements WindowListener{
 		//For every index of the 9x9 sudoku 2d array
 		for(int i = 0; i < 9; i++) {
 			for(int j = 0; j < 9; j++) {
-				if(sudokuArray[i][j] != -1) { //As long as the element is not -1 (which represents an unfilled box)
-					insert(sudokuArray[i][j],i,j);//Insert it into the visualized array
-				}
+				insert(sudokuArray[i][j],i,j);//Insert it into the visualized array
 			}
 		}
 		return;
@@ -282,6 +281,85 @@ class Sudoku extends Frame implements WindowListener{
 		//That will give you the index within the sudokuBox where the element you requested is stored
 		
 		return boxes[boxIndex].get(finalIndex);//Then get the value
+	}
+	
+	public int getNextValidBox(int sudoku[][],int row, int column,int min ) {
+		boolean[] valid = new boolean[9];
+		java.util.Arrays.fill(valid, true);//Set all to be valid at first
+		
+		//Check for all numbers in column that are not you
+		for(int i = 0;i < 9; i++) {
+			int temp = sudoku[i][column];
+			if(i != row && temp != -1) {//As long as youre not comparing it to yourself or an invalid box
+				valid[temp - 1] = false;//It has seen it, and thus is false.
+			}
+		}
+		
+		//Check for all numbers in row that are not you
+		for(int j = 0;j < 9; j++) {
+			int temp = sudoku[row][j];
+			if(j != column && temp != -1) {//As long as youre not comparing it to yourself
+				valid[temp - 1] = false;//It has seen it, and thus is false.
+			}
+		}
+		
+		
+		//These commented out sections only apply to diagonal sudoku
+		/*
+		//Check for all numbers along the diagonal, if you are across the diagonal
+		//This one checks for the left diagonal
+		if(row == column) {//The row equaling the column implies you are along the diagonal
+			for(int k = 0;k < 9; k++) {
+				int temp = sudoku[k][k];
+				if(k != column && temp != -1) {//As long as youre not comparing it to yourself
+					valid[temp - 1] = false;//It has seen it, and thus is false.
+				}
+			}
+		}
+		
+		
+		//Check for all numbers along the diagonal, if you are across the diagonal
+		//This one checks for the right diagonal
+		if((row+1) + (column+1) == 10) {//If you look at a traditional sudoku board, adding the row+column (while indexing by one)
+										//equaling 10 implies it is on the right diagonal
+			for(int k = 8;k != -1; k--) {//TODO:Proper logic. Also maybe == 8 on the if statement.
+				int tempRow = 8 - k;//The row of the right diagonal is on the opposite side as far. 8 - k yields this result.
+									//If k, the column, was say 2, the row would have to be 6.
+				int temp = sudoku[tempRow][k];
+				if(k != column && temp != -1) {//As long as youre not comparing it to yourself
+					valid[temp - 1] = false;//It has seen it, and thus is false.
+				}
+			}
+		}
+		*/
+		
+		
+		//Check the box you are in
+		//First find the top left position of the sub box
+		int originX = (row/3)*3;//Dividing and then multiplying by three will shrink then truncate it to get the x and y
+		int originY = (column/3)*3;//Of the top left of the sub box you are in
+		
+		for(int i = originX;i < originX + 3;i++) {
+			for(int j = originY;j < originY + 3;j++) {
+				int temp = sudoku[i][j];
+				if(temp != -1) {//Make sure it is a valid, set box
+					if(i != row || j != column) {//Make sure you are not comparing it to yourself, at your coordinates
+						valid[temp - 1] = false;//It has seen it, and thus is false.
+					}
+				}
+			}
+		}
+		//Return the smallest valid position
+		
+
+		
+		for(int i = min; i < 9;i++) {
+			if(valid[i]) {
+			return i + 1;
+			}
+		}
+		
+		return -1;
 	}
 	
 
