@@ -7,14 +7,21 @@ import java.awt.geom.Line2D;
 
 class Sudoku extends Frame implements WindowListener{
 
-	public SudokuBox boxes[];
-	public int[][] sudokuArray;
+	public SudokuBox boxes[];//Holds the sub boxes of the sudoku grid
+	public int[][] sudokuArray;//The internal sudoku grid.
 	
 	
 	Sudoku(){
 		addWindowListener(this);
 		
 		
+		//Create the sub boxes
+		//Holds the sudoku grid
+		//Each box holds 9 slots to represent a single box on the sudoku grid.
+		//They are arranged like this
+		//0 1 2
+		//3 4 5
+		//6 7 8
 		boxes = new SudokuBox[9];
 		boxes[0] = new SudokuBox(50,50,this);
 		boxes[1] = new SudokuBox(190,50,this);
@@ -28,25 +35,16 @@ class Sudoku extends Frame implements WindowListener{
 		boxes[7] = new SudokuBox(190,330,this);
 		boxes[8] = new SudokuBox(330,330,this);
 		
+		//The size of the window can be a flat 500x500
 		setSize(500,500);
 		setLayout(null);
 		setVisible(true);
 		
 		
-		/*
-		int current = 0;
-		for(int i = 0;i < 9;i++) {
-			for(int j = 0;j <9;j++) {
-				insert(current,i,j);
-				current++;
-			}
-		}
-		*/
+		setArray(testSudoku);//Set array to the test problem for now
+		updateGraphics();//Update the GUI to represent the changes
 		
-		setArray(testSudoku);
-		updateGraphics();
-		//getNextValidBox(testSudoku,3,3);
-		
+		//The reset button will blank out the GUI and set all numbers to -1.
 		Button blank = new Button("Reset");
 		blank.setBounds(50,450,70,30);
 		blank.addActionListener(new ActionListener(){
@@ -56,7 +54,7 @@ class Sudoku extends Frame implements WindowListener{
 		});
 		add(blank);
 		
-		
+		//The backtracking button will solve the sudoku
 		Button backtrack = new Button("Backtrack");
 		backtrack.setBounds(150,450,70,30);
 		backtrack.addActionListener(new ActionListener(){
@@ -71,6 +69,7 @@ class Sudoku extends Frame implements WindowListener{
 
 	}
 	
+	//A test sudoku array used to test the backtracking algorithm
 	int[][] testSudoku = {
 			{  3, -1, -1,  8, -1,  1, -1, -1 , 2},
 			{  2, -1,  1, -1,  3, -1,  6, -1,  4},
@@ -84,6 +83,7 @@ class Sudoku extends Frame implements WindowListener{
 			
 	};
 	
+	//setArray will assign the internal array to be a given array
 	private void setArray(int[][] sudokuToBeSolved) {
 		//First ensure the given array is valid
 		if(sudokuToBeSolved.length != 9) {
@@ -100,6 +100,8 @@ class Sudoku extends Frame implements WindowListener{
 		sudokuArray = sudokuToBeSolved.clone();
 	}
 	
+	
+	//Update the GUI to represent the internal array
 	public void updateGraphics() {
 		
 		//For every index of the 9x9 sudoku 2d array
@@ -115,23 +117,23 @@ class Sudoku extends Frame implements WindowListener{
 	//Draw grid lines for the board
 	public void paint(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
-        g2.setStroke(new BasicStroke(10));
+        g2.setStroke(new BasicStroke(10)); //Set the size of the lines
+        
+        //Draw the vertical lines
         g2.draw(new Line2D.Float(175, 50, 175, 440));
         g2.draw(new Line2D.Float(315, 50, 315, 440));
         
+        //Draw the horizontal lines
         g2.draw(new Line2D.Float(50, 175, 440, 175));
         g2.draw(new Line2D.Float(50, 315, 440, 315));
 	}
 	
 	public static void main(String args[]){
-	
-		Sudoku f=new Sudoku();
-		
+		Sudoku f=new Sudoku();//Create a sudoku box
 	}
 	
 	public void windowActivated(WindowEvent e) {}  
 	public void windowClosed(WindowEvent e) {}  
-
 	public void windowClosing(WindowEvent e) {  
 	    dispose();  
 	}  
@@ -145,22 +147,25 @@ class Sudoku extends Frame implements WindowListener{
 		
 	}
 	
+	//Complete blanks out the entire sudoku grid
 	private void blank() {
 		for(int i = 0;i < 9;i++) {
 			for(int j = 0;j < 9; j++) {
-				sudokuArray[i][j] = -1;
+				sudokuArray[i][j] = -1;//Turn everything to -1(which represents an unfilled square)
 			}
 		}
-		updateGraphics();
+		updateGraphics();//Update the graphics to represent this
 	}
 	
+	//Do the backtracking algorithm
 	private void backtrack() {
-		assignArray();
-		updateGraphics();
-		Backtracking.Backtrack(this);
-		updateGraphics();
+		assignArray();//Update the internal 2d array to represent what the user has entered in the GUI
+		//TODO: Validate that the sudoku doesnt have any errors right off the bat
+		Backtracking.Backtrack(this);//Run the backtracking algorithm
+		updateGraphics();//It is now solved, update the array to reflect it as such.
 	}
 	
+	//This updates the internal 2d array to be consistent with what the user has entered in the GUI
 	private void assignArray() {
 		for(int i = 0; i < 9;i++) {
 			for(int j = 0; j < 9;j++) {
@@ -284,31 +289,37 @@ class Sudoku extends Frame implements WindowListener{
 		}
 		
 		//Referencing the chart, match the box row and column to get the correct index
-		if(boxRow == 0 && boxColumn == 0) {
+		//A single sub box of sudoku refers to the group of 9 slots for numbers to be entered into
+		//In sudoku, each one must hold one number (1 to 9), and this number must be unique among the numbers in the box.
+		//The index is stored like this
+		//012
+		//345
+		//678
+		if(boxRow == 0 && boxColumn == 0) { //If the row in the box is 0, and the column is 0, then the index you are in the box is 0.
 			boxIndex = 0;
 		}
-		else if(boxRow == 0 && boxColumn == 1) {
+		else if(boxRow == 0 && boxColumn == 1) {//If the row in the box is 0, and the column is 1, then the index you are in the box is 1.
 			boxIndex = 1;
 		}
-		else if(boxRow == 0 && boxColumn == 2) {
+		else if(boxRow == 0 && boxColumn == 2) {//If the row in the box is 0, and the column is 2, then the index you are in the box is 2.
 			boxIndex = 2;
 		}
-		else if(boxRow == 1 && boxColumn == 0) {
+		else if(boxRow == 1 && boxColumn == 0) {//If the row in the box is 1, and the column is 0, then the index you are in the box is 3.
 			boxIndex = 3;
 		}
-		else if(boxRow == 1 && boxColumn == 1) {
+		else if(boxRow == 1 && boxColumn == 1) {//If the row in the box is 1, and the column is 1, then the index you are in the box is 4.
 			boxIndex = 4;
 		}
-		else if(boxRow == 1 && boxColumn == 2) {
+		else if(boxRow == 1 && boxColumn == 2) {//If the row in the box is 1, and the column is 2, then the index you are in the box is 5.
 			boxIndex = 5;
 		}
-		else if(boxRow == 2 && boxColumn == 0) {
+		else if(boxRow == 2 && boxColumn == 0) {//If the row in the box is 2, and the column is 0, then the index you are in the box is 6.
 			boxIndex = 6;
 		}
-		else if(boxRow == 2 && boxColumn == 1) {
+		else if(boxRow == 2 && boxColumn == 1) {//If the row in the box is 2, and the column is 1, then the index you are in the box is 7.
 			boxIndex = 7;
 		}
-		else if(boxRow == 2 && boxColumn == 2) {
+		else if(boxRow == 2 && boxColumn == 2) {//If the row in the box is 2, and the column is 2, then the index you are in the box is 2.
 			boxIndex = 8;
 		}
 		
@@ -326,8 +337,9 @@ class Sudoku extends Frame implements WindowListener{
 		return boxes[boxIndex].get(finalIndex);//Then get the value
 	}
 	
+	//This function returns the lowest number that could fit in the box at index [row][column] that is greater than min.
 	public int getNextValidBox(int sudoku[][],int row, int column,int min ) {
-		boolean[] valid = new boolean[9];
+		boolean[] valid = new boolean[9];//Create an array that stores boolean. Each one says its index+1 is a valid number for the box.
 		java.util.Arrays.fill(valid, true);//Set all to be valid at first
 		
 		//Check for all numbers in column that are not you
@@ -348,6 +360,7 @@ class Sudoku extends Frame implements WindowListener{
 		
 		
 		//These commented out sections only apply to diagonal sudoku
+		//TODO: Create a checkbox to allow for diagonal
 		/*
 		//Check for all numbers along the diagonal, if you are across the diagonal
 		//This one checks for the left diagonal
@@ -392,28 +405,18 @@ class Sudoku extends Frame implements WindowListener{
 				}
 			}
 		}
-		//Return the smallest valid position
-		/*
-		System.out.print("(");
-		for(int i = 0; i < 9;i++) {
-			if(valid[i]) {
-				System.out.print(Integer.toString(i+1));
-			}
-		}
-		System.out.print(")\n");
-		*/
-
 		
+		//Return the smallest valid number greater than the min.
 		for(int i = min-1; i < 9;i++) {
 			if(i <= -1) {
-				i = 0;
+				i = 0;//If the min is -1, then assume you actually want to start at 0 or else you will error.
 			}
-			if(valid[i]) {
-			return i + 1;
+			if(valid[i]) {//Once you find the first valid number you will return it
+			return i + 1;//Return +1 because this indexes at 0(0 to 8), but sudoku indexes at 1 (1 to 9)
 			}
 		}
 		
-		return -1;
+		return -1;//If nothing was valid, return -1.
 	}
 	
 

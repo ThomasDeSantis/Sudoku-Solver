@@ -39,17 +39,20 @@ public class SudokuBox{
 		}
 	}
 	
+	//Given the index of a box and a value,
+	//Set the index to that value
 	public void set(int boxI, int val) {
 		if(val == -1) {
-			box[boxI].setText("");
+			box[boxI].setText("");//-1 represents the null number, so set the text to nothing
 		}
 		else {
-			box[boxI].setText(Integer.toString(val));
+			box[boxI].setText(Integer.toString(val));//Otherwise just set the text to the given value
 		}
 		
 		
 	}
 	
+	//Get, given an index, will return the value inside the slot
 	public int get(int boxI) {
 		if(box[boxI].getText().isBlank()) {
 			return -1;
