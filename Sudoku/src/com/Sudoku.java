@@ -9,7 +9,7 @@ class Sudoku extends Frame implements WindowListener{
 
 	public SudokuBox boxes[];//Holds the sub boxes of the sudoku grid
 	public int[][] sudokuArray;//The internal sudoku grid.
-	
+	boolean diagonal = false;//Stores whether or not we are checking a diagonal sudoku
 	
 	Sudoku(){
 		addWindowListener(this);
@@ -64,6 +64,15 @@ class Sudoku extends Frame implements WindowListener{
 		});
 		add(backtrack);
 
+		Checkbox diagonalCheckbox = new Checkbox("Diagonal");
+		diagonalCheckbox.setBounds(400,450,100,30);
+		diagonalCheckbox.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e) {
+				diagonal = !diagonal;
+			}
+			
+		});
+		add(diagonalCheckbox);
 		
 
 
@@ -360,34 +369,34 @@ class Sudoku extends Frame implements WindowListener{
 		
 		
 		//These commented out sections only apply to diagonal sudoku
-		//TODO: Create a checkbox to allow for diagonal
-		/*
-		//Check for all numbers along the diagonal, if you are across the diagonal
-		//This one checks for the left diagonal
-		if(row == column) {//The row equaling the column implies you are along the diagonal
-			for(int k = 0;k < 9; k++) {
-				int temp = sudoku[k][k];
-				if(k != column && temp != -1) {//As long as youre not comparing it to yourself
-					valid[temp - 1] = false;//It has seen it, and thus is false.
+		if(diagonal) {
+			//Check for all numbers along the diagonal, if you are across the diagonal
+			//This one checks for the left diagonal
+			if(row == column) {//The row equaling the column implies you are along the diagonal
+				for(int k = 0;k < 9; k++) {
+					int temp = sudoku[k][k];
+					if(k != column && temp != -1) {//As long as youre not comparing it to yourself
+						valid[temp - 1] = false;//It has seen it, and thus is false.
+					}
+				}
+			}
+			
+			
+			//Check for all numbers along the diagonal, if you are across the diagonal
+			//This one checks for the right diagonal
+			if((row+1) + (column+1) == 10) {//If you look at a traditional sudoku board, adding the row+column (while indexing by one)
+											//equaling 10 implies it is on the right diagonal
+				for(int k = 8;k != -1; k--) {//TODO:Proper logic. Also maybe == 8 on the if statement.
+					int tempRow = 8 - k;//The row of the right diagonal is on the opposite side as far. 8 - k yields this result.
+										//If k, the column, was say 2, the row would have to be 6.
+					int temp = sudoku[tempRow][k];
+					if(k != column && temp != -1) {//As long as youre not comparing it to yourself
+						valid[temp - 1] = false;//It has seen it, and thus is false.
+					}
 				}
 			}
 		}
 		
-		
-		//Check for all numbers along the diagonal, if you are across the diagonal
-		//This one checks for the right diagonal
-		if((row+1) + (column+1) == 10) {//If you look at a traditional sudoku board, adding the row+column (while indexing by one)
-										//equaling 10 implies it is on the right diagonal
-			for(int k = 8;k != -1; k--) {//TODO:Proper logic. Also maybe == 8 on the if statement.
-				int tempRow = 8 - k;//The row of the right diagonal is on the opposite side as far. 8 - k yields this result.
-									//If k, the column, was say 2, the row would have to be 6.
-				int temp = sudoku[tempRow][k];
-				if(k != column && temp != -1) {//As long as youre not comparing it to yourself
-					valid[temp - 1] = false;//It has seen it, and thus is false.
-				}
-			}
-		}
-		*/
 		
 		
 		//Check the box you are in

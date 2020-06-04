@@ -2,7 +2,6 @@ package com;
 
 import java.awt.TextField;
 import java.awt.Font;
-import java.awt.Frame;
 
 public class SudokuBox{
 	private TextField box[];
