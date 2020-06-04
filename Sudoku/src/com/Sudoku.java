@@ -64,11 +64,13 @@ class Sudoku extends Frame implements WindowListener{
 		});
 		add(backtrack);
 
+		//Add a button that will change whether or not the program is evaluating a diagonal sudoku
 		Checkbox diagonalCheckbox = new Checkbox("Diagonal");
 		diagonalCheckbox.setBounds(400,450,100,30);
 		diagonalCheckbox.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e) {
-				diagonal = !diagonal;
+				diagonal = !diagonal;//Changes the checkbox to the opposite value Checked = checking for diagonals, not checked = not checking for diagonals
+				
 			}
 			
 		});
@@ -368,7 +370,8 @@ class Sudoku extends Frame implements WindowListener{
 		}
 		
 		
-		//These commented out sections only apply to diagonal sudoku
+		//This section checks for diagonals
+		//Only do this if the user has entered a diagonal sudoku and checked the diagonal box
 		if(diagonal) {
 			//Check for all numbers along the diagonal, if you are across the diagonal
 			//This one checks for the left diagonal
@@ -427,6 +430,8 @@ class Sudoku extends Frame implements WindowListener{
 		
 		return -1;//If nothing was valid, return -1.
 	}
+	
+	
 	
 
 }
