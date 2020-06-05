@@ -1,6 +1,9 @@
 package com;
 
 import java.awt.TextField;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+import java.awt.Color;
 import java.awt.Font;
 
 public class SudokuBox{
@@ -18,6 +21,19 @@ public class SudokuBox{
 		for(int i = 0;i < 9;i++) {
 			box[i] = new TextField("");
 			box[i].setFont(textFont);
+			final int temp = i;//Must use final variable inside of enclosed scope (below)
+			//Text listener used to reset color if it was set to red because of an error
+			box[i].addTextListener( new TextListener()
+			{	
+				@Override
+				public void textValueChanged(TextEvent e) {
+					if ( e.getID() == TextEvent.TEXT_VALUE_CHANGED )
+					{
+						box[temp].setForeground(Color.black);//if you change the color, set the color back to black
+					}
+					
+				}
+			});
 		}
 		
 		//Set box boundaries
@@ -59,5 +75,9 @@ public class SudokuBox{
 		else {
 			return Integer.valueOf(box[boxI].getText());
 		}
+	}
+	
+	public void errorColor(int boxI) {
+		box[boxI].setForeground(Color.red);
 	}
 }

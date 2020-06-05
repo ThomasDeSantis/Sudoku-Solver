@@ -171,9 +171,15 @@ class Sudoku extends Frame implements WindowListener{
 	//Do the backtracking algorithm
 	private void backtrack() {
 		assignArray();//Update the internal 2d array to represent what the user has entered in the GUI
-		//TODO: Validate that the sudoku doesnt have any errors right off the bat
-		Backtracking.Backtrack(this);//Run the backtracking algorithm
-		updateGraphics();//It is now solved, update the array to reflect it as such.
+		if(verify()) {//First ensure the user entered a valid sudoku
+			Backtracking.Backtrack(this);//Run the backtracking algorithm
+			updateGraphics();//It is now solved, update the array to reflect it as such.
+			return;
+		}
+		else {
+			System.err.println("Error: Invalid sudoku");
+			return;
+		}
 	}
 	
 	//This updates the internal 2d array to be consistent with what the user has entered in the GUI
@@ -348,6 +354,85 @@ class Sudoku extends Frame implements WindowListener{
 		return boxes[boxIndex].get(finalIndex);//Then get the value
 	}
 	
+	//Retrieves the element at the row and column of the sudoku table
+	//For information about how the sudoku table is stored read the prior insert function
+	public void changeRowColorError(int row, int column) {
+		if(row >= 9 || column >= 9) {
+			return;//Will cause a null pointer exception if you pass it greater than 9, so return
+		}
+		int boxRow;//For box row and column imagine instead of 9 tables, they are instead arranged in a [3][3] array
+		int boxColumn;//An element inside the top left box would be at 0,0, an element at the bottom right would be 3,3
+		int boxIndex = 0;//These will be converted to get the index of the box that it should be in when used with boxes[]
+		
+		if(row < 3) {//If row is less than three, then it is within the top row of the sudoku puzzle
+			boxRow = 0;
+		}
+		else if(row < 6) {//If it is 3 <= x < 6 then it is in the middle row
+			boxRow = 1;
+		}
+		else {
+			boxRow = 2; //Otherwise it is in the bottom row
+		}
+		
+		if(column < 3) {//If the column is less than three it is within the leftmost column column
+			boxColumn = 0;
+		}
+		else if(column < 6) {//If it is 3 <= x < 6 then it is in the middle column
+			boxColumn = 1;
+		}
+		else {//Otherwise it is in the rightmost column
+			boxColumn = 2;
+		}
+		
+		//Referencing the chart, match the box row and column to get the correct index
+		//A single sub box of sudoku refers to the group of 9 slots for numbers to be entered into
+		//In sudoku, each one must hold one number (1 to 9), and this number must be unique among the numbers in the box.
+		//The index is stored like this
+		//012
+		//345
+		//678
+		if(boxRow == 0 && boxColumn == 0) { //If the row in the box is 0, and the column is 0, then the index you are in the box is 0.
+			boxIndex = 0;
+		}
+		else if(boxRow == 0 && boxColumn == 1) {//If the row in the box is 0, and the column is 1, then the index you are in the box is 1.
+			boxIndex = 1;
+		}
+		else if(boxRow == 0 && boxColumn == 2) {//If the row in the box is 0, and the column is 2, then the index you are in the box is 2.
+			boxIndex = 2;
+		}
+		else if(boxRow == 1 && boxColumn == 0) {//If the row in the box is 1, and the column is 0, then the index you are in the box is 3.
+			boxIndex = 3;
+		}
+		else if(boxRow == 1 && boxColumn == 1) {//If the row in the box is 1, and the column is 1, then the index you are in the box is 4.
+			boxIndex = 4;
+		}
+		else if(boxRow == 1 && boxColumn == 2) {//If the row in the box is 1, and the column is 2, then the index you are in the box is 5.
+			boxIndex = 5;
+		}
+		else if(boxRow == 2 && boxColumn == 0) {//If the row in the box is 2, and the column is 0, then the index you are in the box is 6.
+			boxIndex = 6;
+		}
+		else if(boxRow == 2 && boxColumn == 1) {//If the row in the box is 2, and the column is 1, then the index you are in the box is 7.
+			boxIndex = 7;
+		}
+		else if(boxRow == 2 && boxColumn == 2) {//If the row in the box is 2, and the column is 2, then the index you are in the box is 2.
+			boxIndex = 8;
+		}
+		
+		//Now you must find the correct index within the sudokuBox class
+		//It is stored like
+		// 0 1 2
+		// 3 4 5
+		// 6 7 8
+		int localR = row % 3;//The local row will represent which row the element is on
+		int localC = column % 3;//The local column will represent which column it is in
+		int finalIndex = (localR * 3) + localC;//The final index is calculated by multiplying the local row by three (as there are three rows)
+		//And the adding the local column
+		//That will give you the index within the sudokuBox where the element you requested is stored
+		
+		boxes[boxIndex].errorColor(finalIndex);//Then get the value
+	}
+	
 	//This function returns the lowest number that could fit in the box at index [row][column] that is greater than min.
 	public int getNextValidBox(int sudoku[][],int row, int column,int min ) {
 		boolean[] valid = new boolean[9];//Create an array that stores boolean. Each one says its index+1 is a valid number for the box.
@@ -431,7 +516,113 @@ class Sudoku extends Frame implements WindowListener{
 		return -1;//If nothing was valid, return -1.
 	}
 	
-	
-	
+	//Function verifies that a sudoku is valid
+	//It does this by making sure there are no slots that by default return no possible value
+	//TODO: Indicate index that failed
+	//TODO: Make sure no index has the same value in the same row/column/box
+	public boolean verify() {
+		boolean verified = true;//Assume the verification will return true
+		for(int i = 0;i < 9;i++) {
+			for(int j = 0;j < 9;j++) {
+				if(sudokuArray[i][j] == -1) {//Only check indices without a value
+					if(getNextValidBox(sudokuArray,i,j,1) == -1) {
+						verified =  false;//If there is no possible valid box you entered an invalid sudoku
+						changeRowColorError(i,j);
+					}
+				}
+				else {
+					if(!checkEnteredInvalid(i,j)) {
+						
+						verified = false;
+						changeRowColorError(i,j);
+					}
+				}
+			}
+		}
+		//Create a dialog box informing the user they have set an invalid sudoku
+		if(!verified) {
+			Frame temp = new Frame();
+			final Dialog sError = new Dialog(temp,"Sudoku Error",true);
+			sError.setLayout(new FlowLayout());
+			Button close = new Button("OK!");
+			close.addActionListener(new ActionListener(){
 
+				public void actionPerformed(ActionEvent e) {
+					sError.dispose();
+				}
+			});
+			sError.add(new Label("Warning:Invalid sudoku."));
+			sError.add(new Label("Ensure you have entered it correctly."));
+			sError.add(close);
+			sError.setSize(250,130);
+			sError.setVisible(true);
+		}
+		return verified;
+	}
+	
+	//This checks if a known index has a matching value in its own row/column/box/or diagonal (if applicable)
+	//Used in the verification function to make sure none of those errors exist at any point
+	public boolean checkEnteredInvalid(int row, int column){
+		int check = sudokuArray[row][column];
+		
+		//Check for all numbers in column that are not you
+		for(int i = 0;i < 9; i++) {
+			if(i != row && sudokuArray[i][column] == check) {//If you are in a different row and same column and your number is present
+				return false;
+			}
+		}
+		
+		//Check for all numbers in row that are not you
+		for(int j = 0;j < 9; j++) {
+			if(j != column && sudokuArray[row][j] == check) {//If you are in a different column and same row and your number is present
+				return false;
+			}
+		}
+		
+		
+		//This section checks for diagonals
+		//Only do this if the user has entered a diagonal sudoku and checked the diagonal box
+		if(diagonal) {
+			//Check for all numbers along the diagonal, if you are across the diagonal
+			//This one checks for the left diagonal
+			if(row == column) {//The row equaling the column implies you are along the diagonal
+				for(int k = 0;k < 9; k++) {
+					if(k != column && sudokuArray[k][k] == check) {//If something not you in the left diagonal equals you then you are false
+						return false;
+					}
+				}
+			}
+			
+			
+			//Check for all numbers along the diagonal, if you are across the diagonal
+			//This one checks for the right diagonal
+			if((row+1) + (column+1) == 10) {//If you look at a traditional sudoku board, adding the row+column (while indexing by one)
+											//equaling 10 implies it is on the right diagonal
+				for(int k = 8;k != -1; k--) {//TODO:Proper logic. Also maybe == 8 on the if statement.
+					int tempRow = 8 - k;//The row of the right diagonal is on the opposite side as far. 8 - k yields this result.
+										//If k, the column, was say 2, the row would have to be 6.
+					if(k != column && sudokuArray[tempRow][k] == -1) {//Check for the right diagonal
+						return false;
+					}
+				}
+			}
+		}
+		
+		//Check the box you are in
+		//First find the top left position of the sub box
+		int originX = (row/3)*3;//Dividing and then multiplying by three will shrink then truncate it to get the x and y
+		int originY = (column/3)*3;//Of the top left of the sub box you are in
+		
+		for(int i = originX;i < originX + 3;i++) {
+			for(int j = originY;j < originY + 3;j++) {
+				if(sudokuArray[i][j] == check) {//Make sure it is a valid, set box
+					if(i != row || j != column) {//Make sure you are not comparing it to yourself, at your coordinates
+						return false;
+					}
+				}
+			}
+		}
+		
+		return true;//If you find no errors, then you can return true
+	}
 }
