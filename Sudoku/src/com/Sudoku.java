@@ -171,6 +171,12 @@ class Sudoku extends Frame implements WindowListener{
 	//Do the backtracking algorithm
 	private void backtrack() {
 		assignArray();//Update the internal 2d array to represent what the user has entered in the GUI
+		//Reset the color to black for all places
+		for(int i = 0;i < 9;i++) {
+			for(int j = 0;j < 9;j++) {
+				changeRowColor(i,j,Color.black);
+			}
+		}
 		if(verify()) {//First ensure the user entered a valid sudoku
 			Backtracking.Backtrack(this);//Run the backtracking algorithm
 			updateGraphics();//It is now solved, update the array to reflect it as such.
@@ -356,7 +362,7 @@ class Sudoku extends Frame implements WindowListener{
 	
 	//Retrieves the element at the row and column of the sudoku table
 	//For information about how the sudoku table is stored read the prior insert function
-	public void changeRowColorError(int row, int column) {
+	public void changeRowColor(int row, int column,Color c) {
 		if(row >= 9 || column >= 9) {
 			return;//Will cause a null pointer exception if you pass it greater than 9, so return
 		}
@@ -430,7 +436,7 @@ class Sudoku extends Frame implements WindowListener{
 		//And the adding the local column
 		//That will give you the index within the sudokuBox where the element you requested is stored
 		
-		boxes[boxIndex].errorColor(finalIndex);//Then get the value
+		boxes[boxIndex].changeColor(finalIndex,c);//Then get the value
 	}
 	
 	//This function returns the lowest number that could fit in the box at index [row][column] that is greater than min.
@@ -527,14 +533,14 @@ class Sudoku extends Frame implements WindowListener{
 				if(sudokuArray[i][j] == -1) {//Only check indices without a value
 					if(getNextValidBox(sudokuArray,i,j,1) == -1) {
 						verified =  false;//If there is no possible valid box you entered an invalid sudoku
-						changeRowColorError(i,j);
+						changeRowColor(i,j,Color.red);//Change the color to red
 					}
 				}
 				else {
 					if(!checkEnteredInvalid(i,j)) {
 						
 						verified = false;
-						changeRowColorError(i,j);
+						changeRowColor(i,j,Color.red);//Change the color to red
 					}
 				}
 			}

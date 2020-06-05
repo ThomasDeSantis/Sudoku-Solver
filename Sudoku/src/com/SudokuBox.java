@@ -77,7 +77,7 @@ public class SudokuBox{
 		}
 	}
 	
-	public void errorColor(int boxI) {
-		box[boxI].setForeground(Color.red);
+	public void changeColor(int boxI,Color c) {
+		box[boxI].setForeground(c);
 	}
 }
