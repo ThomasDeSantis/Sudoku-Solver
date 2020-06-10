@@ -12,15 +12,10 @@ public class Backtracking {
 		boolean[][] knownSpaces = new boolean[9][9];
 		getKnown(knownSpaces,s.sudokuArray);//Store which indices we already know the correct number for (the already set)
 		
-		int count = 0;
 		Stack<int[]> priorActions = new Stack<int[]>();//This stack will store the prior actions
 		int i = 0, j = 0;//These will be the iterators
 		while(i <= 8 && j <= 8) {//Iterate over the array
 			
-			if((count % 1000) == 999) {//Update the display every 1000 ticks (Used to catch bugs running infintely)
-				s.updateGraphics();
-				count = 0;
-			}
 			if(knownSpaces[i][j] == false) {//Known spaces already have a determined number, so you only have to do undetermined slots
 				if(s.sudokuArray[i][j] < 10) {//Anything over 10 should never occur, will result in an error
 					
@@ -65,7 +60,6 @@ public class Backtracking {
 					j++;//If you arent at the end of the row continue to the next column of the same row
 				}
 			}
-			count++;//Iterate count
 		}
 	}
 	

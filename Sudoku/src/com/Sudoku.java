@@ -4,6 +4,8 @@ import java.awt.event.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 class Sudoku extends Frame implements WindowListener{
 
@@ -59,10 +61,28 @@ class Sudoku extends Frame implements WindowListener{
 		backtrack.setBounds(150,450,70,30);
 		backtrack.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				long start = System.nanoTime();
 				backtrack();
+				long time = System.nanoTime() - start;
+				time = TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
+				System.out.println("Completed in " + Long.toString(time)+ " ms.");
 			}
 		});
 		add(backtrack);
+		
+		//The logic solve solves a problem via logic
+		Button logic = new Button("Logic Solve");
+		logic.setBounds(250,450,70,30);
+		logic.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				long start = System.nanoTime();
+				logic();
+				long time = System.nanoTime() - start;
+				time = TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
+				System.out.println("Completed in " + Long.toString(time)+ " ms.");
+			}
+		});
+		add(logic);
 
 		//Add a button that will change whether or not the program is evaluating a diagonal sudoku
 		Checkbox diagonalCheckbox = new Checkbox("Diagonal");
@@ -187,6 +207,26 @@ class Sudoku extends Frame implements WindowListener{
 			return;
 		}
 	}
+	
+	//Do the logic algorithm
+		private void logic() {
+			assignArray();//Update the internal 2d array to represent what the user has entered in the GUI
+			//Reset the color to black for all places
+			for(int i = 0;i < 9;i++) {
+				for(int j = 0;j < 9;j++) {
+					changeRowColor(i,j,Color.black);
+				}
+			}
+			if(verify()) {//First ensure the user entered a valid sudoku
+				LogicSolve.LogicSolve(this);
+				updateGraphics();//It is now solved, update the array to reflect it as such.
+				return;
+			}
+			else {
+				System.err.println("Error: Invalid sudoku");
+				return;
+			}
+		}
 	
 	//This updates the internal 2d array to be consistent with what the user has entered in the GUI
 	private void assignArray() {
@@ -480,7 +520,7 @@ class Sudoku extends Frame implements WindowListener{
 			//This one checks for the right diagonal
 			if((row+1) + (column+1) == 10) {//If you look at a traditional sudoku board, adding the row+column (while indexing by one)
 											//equaling 10 implies it is on the right diagonal
-				for(int k = 8;k != -1; k--) {//TODO:Proper logic. Also maybe == 8 on the if statement.
+				for(int k = 8;k != -1; k--) {
 					int tempRow = 8 - k;//The row of the right diagonal is on the opposite side as far. 8 - k yields this result.
 										//If k, the column, was say 2, the row would have to be 6.
 					int temp = sudoku[tempRow][k];
@@ -524,8 +564,6 @@ class Sudoku extends Frame implements WindowListener{
 	
 	//Function verifies that a sudoku is valid
 	//It does this by making sure there are no slots that by default return no possible value
-	//TODO: Indicate index that failed
-	//TODO: Make sure no index has the same value in the same row/column/box
 	public boolean verify() {
 		boolean verified = true;//Assume the verification will return true
 		for(int i = 0;i < 9;i++) {
@@ -604,7 +642,7 @@ class Sudoku extends Frame implements WindowListener{
 			//This one checks for the right diagonal
 			if((row+1) + (column+1) == 10) {//If you look at a traditional sudoku board, adding the row+column (while indexing by one)
 											//equaling 10 implies it is on the right diagonal
-				for(int k = 8;k != -1; k--) {//TODO:Proper logic. Also maybe == 8 on the if statement.
+				for(int k = 8;k != -1; k--) {
 					int tempRow = 8 - k;//The row of the right diagonal is on the opposite side as far. 8 - k yields this result.
 										//If k, the column, was say 2, the row would have to be 6.
 					if(k != column && sudokuArray[tempRow][k] == -1) {//Check for the right diagonal
