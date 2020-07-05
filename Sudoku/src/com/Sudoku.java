@@ -114,6 +114,20 @@ class Sudoku extends Frame implements WindowListener{
 			
 	};
 	
+	//A sudoku used to test naked pairs
+	int[][] nakedPairSudoku = {
+			{  7, -1, -1,  8,  4,  9, -1,  3, -1},
+			{  9,  2,  8,  1,  3,  5, -1, -1,  6},
+			{  4, -1, -1,  2,  6,  7, -1,  8,  9},
+			{  6,  4,  2,  7,  8,  3,  9,  5,  1},
+			{  3,  9,  7,  4,  5,  1,  6,  2,  8},
+			{  8,  1,  5,  6,  9,  2,  3, -1, -1},
+			{  2, -1,  4,  5,  1,  6, -1,  9,  3},
+			{  1, -1, -1, -1, -1,  8, -1,  6, -1},
+			{  5, -1, -1, -1, -1,  4, -1,  1, -1}
+			
+	};
+	
 	//setArray will assign the internal array to be a given array
 	private void setArray(int[][] sudokuToBeSolved) {
 		//First ensure the given array is valid
@@ -128,7 +142,7 @@ class Sudoku extends Frame implements WindowListener{
 			}
 		}
 		
-		sudokuArray = sudokuToBeSolved.clone();
+		sudokuArray = nakedPairSudoku.clone();
 	}
 	
 	
